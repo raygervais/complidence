@@ -24,7 +24,7 @@ function isColorDark(color) {
 
   // Using the HSP value, determine whether the color is light or dark
   console.log(color, hsp);
-  if (hsp > 100) {
+  if (hsp > 127.5) {
     return false;
   }
 
@@ -62,28 +62,31 @@ function LightenDarkenColor(col, amt) {
 
 // Based off of https://webdevtrick.com/javascript-random-gradient-generator/
 function shiftBackgroundGradient() {
-  var colors = [];
-
-  for (var i = 0; i < 25; i++) {
-    colors.push(randomColor());
-  }
-
-  console.log(colors)
-
-  var a = randomColor();
-  var b = randomColor();
+  var a = LightenDarkenColor(randomColor(), -50);
+  var b = LightenDarkenColor(randomColor(), -20);
   var c = randomColor();
-  var button_color = isColorDark(a) ? "#eeeeee" : "#111111";
+
+  var button_color = isColorDark(a) ? "#eeeeee" : "#333333";
+
+  // For Quote
+  var quote_color = "#eeeeee";
+  var a_dark = isColorDark(a);
+  var b_dark = isColorDark(b);
+
+  // Light
+  if (!a_dark && !b_dark) {
+    quote_color = LightenDarkenColor(a, 100);
+  }
 
   $("#gradient").css({
     background: a,
-    background: `-moz-linear-gradient(to right,  ${a} 0%,  ${b} 100%)`,
-    background: `-webkit-linear-gradient(to right,  ${a} 0%,  ${b} 100%)`,
-    background: `linear-gradient(to right, ${a} 0%, ${b} 100%)`,
+    background: `-moz-linear-gradient(to top right,  ${a} 0%,  ${b} 100%)`,
+    background: `-webkit-linear-gradient(to top right,  ${a} 0%,  ${b} 100%)`,
+    background: `linear-gradient(to top right, ${a} 0%, ${b} 100%)`,
     filter: `progid:DXImageTransform.Microsoft.gradient( startColorstr='${a}', endColorstr='${b}',GradientType=1 )`
   });
 
-  $("#quote").css("color", isColorDark(a) ? "#eeeeee" : "#333333")
+  $("#quote").css("color", quote_color);
 
   $("#colorA")
     .html(a)
@@ -98,10 +101,14 @@ function shiftBackgroundGradient() {
     "border-color": b
   });
 
+  var darkerPrimary = LightenDarkenColor(a, -30);
+
+  $("footer").css("background", darkerPrimary);
+
   $("#refresh").hover(
     () => {
       $("#refresh").css({
-        background: LightenDarkenColor(a, -30),
+        background: darkerPrimary,
         color: "#ffffff"
       });
     },
